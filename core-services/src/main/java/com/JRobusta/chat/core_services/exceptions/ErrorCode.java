@@ -12,7 +12,8 @@ public enum ErrorCode {
     INVALID_TOKEN("E004", "Invalid token", HttpStatus.UNAUTHORIZED), 
     USER_NOT_FOUND("E005", "User not found", HttpStatus.NOT_FOUND), 
     INVALID_USERNAME_OR_PASSWORD("E006", "Invalid username or password", HttpStatus.UNAUTHORIZED), 
-    ACCOUNT_NOT_ACTIVE("E007", "Account not active", HttpStatus.UNAUTHORIZED);
+    ACCOUNT_NOT_ACTIVE("E007", "Account not active", HttpStatus.UNAUTHORIZED), 
+    INTERNAL_SERVER_ERROR("E500", "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR);
 
     private final String code;
     private final String message;

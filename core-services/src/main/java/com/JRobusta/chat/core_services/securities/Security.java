@@ -5,6 +5,9 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.grpc.server.GlobalServerInterceptor;
+import org.springframework.grpc.server.security.AuthenticationProcessInterceptor;
+import org.springframework.grpc.server.security.GrpcSecurity;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -26,33 +29,20 @@ public class Security {
     private final AuthenticationEntryPoint entryPoint;
     private final BearerTokenResolver getTokenResolver;
 
-
     private static List<String> allowedOrigins = List.of(
-        "https://auth.wezd.io.vn",
-        "https://admin.wezd.io.vn",
-        "https://wezd.io.vn",
-        "http://localhost:3000",
-        "http://localhost:5173"
-    );
-
+            "https://auth.wezd.io.vn",
+            "https://admin.wezd.io.vn",
+            "https://wezd.io.vn",
+            "http://localhost:3000",
+            "http://localhost:5173");
 
     private static List<String> allowedMethods = List.of("GET", "POST", "PUT", "DELETE", "OPTIONS");
-
-    
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
 
         security.csrf(AbstractHttpConfigurer::disable);
-        security.cors(cors -> cors
-                .configurationSource(request -> {
-                    org.springframework.web.cors.CorsConfiguration config = new org.springframework.web.cors.CorsConfiguration();
-                    config.setAllowedOrigins(allowedOrigins);
-                    config.setAllowedMethods(allowedMethods);
-                    config.setAllowedHeaders(List.of("*"));
-                    config.setAllowCredentials(true);
-                    return config;
-                }));
+        security.cors(cors -> cors.disable());
         configureAuthorizationRules(security);
         configureSessionManagement(security);
         configureOAuth2ResourceServer(security);
@@ -77,9 +67,18 @@ public class Security {
                 authz -> authz.anyRequest().permitAll());
     }
 
-
     @Bean
     PasswordEncoder passwordEncoder() {
         return new org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder();
+    }
+
+    @Bean
+    @GlobalServerInterceptor
+    AuthenticationProcessInterceptor jwtSecurityFilterChain(GrpcSecurity grpc) throws Exception {
+        return grpc
+                .authorizeRequests(requests -> requests
+            
+                        .allRequests().permitAll())
+                .build();
     }
 }

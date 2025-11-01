@@ -1,4 +1,4 @@
-package com.JRobusta.chat.core_services.requests;
+package com.JRobusta.chat.core_services.auth_module.requests;
 
 import lombok.Getter;
 

@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-import com.JRobusta.chat.core_services.type.TokenType;
+import com.JRobusta.chat.core_services.auth_module.type.TokenType;
 
 import lombok.Data;
 import lombok.Getter;

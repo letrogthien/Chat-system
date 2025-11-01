@@ -1,4 +1,4 @@
-package com.JRobusta.chat.core_services.entities;
+package com.JRobusta.chat.core_services.auth_module.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

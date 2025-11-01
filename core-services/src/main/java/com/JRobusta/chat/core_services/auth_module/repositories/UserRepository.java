@@ -1,11 +1,11 @@
-package com.JRobusta.chat.core_services.repositories;
+package com.JRobusta.chat.core_services.auth_module.repositories;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.JRobusta.chat.core_services.entities.User;
+import com.JRobusta.chat.core_services.auth_module.entities.User;
 
 
 @Repository

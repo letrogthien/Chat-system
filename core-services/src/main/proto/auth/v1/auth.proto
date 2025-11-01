@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package auth.v1;
+
+service AuthService {
+  rpc VerifyAccessToken (VerifyRequest) returns (VerifyResponse);
+  rpc Hello (HelloRequest) returns (HelloResponse);
+}
+message HelloRequest {
+  string name = 1;
+}
+message HelloResponse {
+  string message = 1;
+}
+
+message VerifyRequest {
+  string access_token = 1;
+}
+
+
+message VerifyResponse {
+  string user_id = 1;
+  string workspace_id = 2;
+  bool valid = 3;
+}
+

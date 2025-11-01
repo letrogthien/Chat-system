@@ -1,4 +1,4 @@
-package com.JRobusta.chat.core_services.response;
+package com.JRobusta.chat.core_services.auth_module.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

@@ -3,3 +3,5 @@ security:
     tokens:
       access_token:
         expiration: 3600000
+      refresh_token:
+        expiration: 86400000

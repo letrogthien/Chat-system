@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package connection.v1;
+
+import "google/protobuf/timestamp.proto";
+
+
+// -------------------------------
+// ENUMS
+// -------------------------------
+enum SessionState {
+  SESSION_STATE_UNKNOWN = 0;
+  CONNECTED = 1;
+  DISCONNECTED = 2;
+  EXPIRED = 3;
+}
+
+// -------------------------------
+// MESSAGES
+// -------------------------------
+message Connection {
+  string connection_id = 1;
+  string user_id = 2;
+  string workspace_id = 3;
+  string gateway_node_id = 4;
+  google.protobuf.Timestamp connected_at = 5;
+  google.protobuf.Timestamp last_ping_at = 6;
+  string device_type = 7;
+  string ip_address = 8;
+  SessionState session_state = 9;
+}
+
+// Request to register a new connection
+message RegisterConnectionRequest {
+  Connection connection = 1;
+  string userId = 2;
+
+}
+
+message RegisterConnectionResponse {
+  bool success = 1;
+}
+
+// Request to unregister a connection
+message UnregisterConnectionRequest {
+  string connection_id = 1;
+  string userId = 2;
+
+}
+
+message UnregisterConnectionResponse {
+  bool success = 1;
+}
+
+// Update ping timestamp for a connection
+message UpdateLastPingRequest {
+  string connection_id = 1;
+  google.protobuf.Timestamp last_ping_at = 2;
+}
+
+message UpdateLastPingResponse {
+  bool success = 1;
+}
+
+// Get all active connections of a user
+message GetConnectionsByUserRequest {
+  string user_id = 1;
+}
+
+message GetConnectionsByUserResponse {
+  repeated Connection connections = 1;
+}
+
+// Get all users who are currently online (optional: filter by workspace)
+message GetOnlineUsersRequest {
+  string workspace_id = 1;
+}
+
+message GetOnlineUsersResponse {
+  repeated string user_ids = 1;
+}
+
+// -------------------------------
+// SERVICE DEFINITION
+// -------------------------------
+service ConnectionManager {
+  rpc RegisterConnection (RegisterConnectionRequest) returns (RegisterConnectionResponse);
+  rpc UnregisterConnection (UnregisterConnectionRequest) returns (UnregisterConnectionResponse);
+  rpc UpdateLastPing (UpdateLastPingRequest) returns (UpdateLastPingResponse);
+  rpc GetConnectionsByUser (GetConnectionsByUserRequest) returns (GetConnectionsByUserResponse);
+  rpc GetOnlineUsers (GetOnlineUsersRequest) returns (GetOnlineUsersResponse);
+}

@@ -18,7 +18,6 @@ import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
-import java.security.Principal;
 import java.time.Instant;
 import java.util.Objects;
 
@@ -38,21 +37,19 @@ public class StompAuthInterceptor implements ChannelInterceptor {
     public Message<?> preSend(Message<?> message, org.springframework.messaging.MessageChannel channel) {
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         String sessionId = accessor.getSessionId();
+        String userId = Objects.toString(
+                Objects.requireNonNull(accessor.getSessionAttributes()).get("userId"),
+                ""
+        );
         if (StompCommand.CONNECT.equals(accessor.getCommand())) {
-            String authToken = accessor.getFirstNativeHeader("token");
-            Auth.VerifyResponse verified = authGrpcClient.verifyAccessToken(authToken);
-            if (verified == null || !verified.getValid()) {
-                return null;
-            }
-            Principal user = verified::getUserId;
-            accessor.setUser(user);
+
 
             Instant now = Instant.now();
             Timestamp ts = Timestamps.fromMillis(now.toEpochMilli());
             ConnectionManagerOuterClass.Connection connection = ConnectionManagerOuterClass.Connection
                     .newBuilder()
                     .setConnectionId(sessionId)
-                    .setUserId(verified.getUserId())
+                    .setUserId(userId)
                     .setWorkspaceId("sample")
                     .setGatewayNodeId(gatewayNodeId)
                     .setConnectedAt(ts)
@@ -65,7 +62,7 @@ public class StompAuthInterceptor implements ChannelInterceptor {
                     .setSessionState(ConnectionManagerOuterClass.SessionState.CONNECTED)
                     .build();
 
-            boolean a = connectionManagerClient.saveConnection(connection, verified.getUserId());
+            boolean a = connectionManagerClient.saveConnection(connection, userId);
             if ( !a) {
                 return null;
             }

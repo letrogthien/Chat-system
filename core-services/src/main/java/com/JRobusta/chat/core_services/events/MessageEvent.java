@@ -1,19 +1,16 @@
-package com.JRobusta.chat.socket_gateway.dto;
+package com.JRobusta.chat.core_services.events;
 
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.UUID;
 
+
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @Builder
-public class SocketMessageDTO {
+public class MessageEvent {
 
     private UUID messageId;
 
@@ -35,5 +32,4 @@ public class SocketMessageDTO {
 
     private Boolean edited = false;
     private Boolean deleted = false;
-    
 }

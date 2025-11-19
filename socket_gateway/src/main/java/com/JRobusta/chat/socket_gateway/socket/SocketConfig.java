@@ -14,18 +14,22 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 public class SocketConfig implements WebSocketMessageBrokerConfigurer  {
     private  final ChannelInterceptor stompAuthInterceptor;
     private  final IpHandshakeInterceptor ipHandshakeInterceptor;
+    private  final CusHandshakeInterceptor cusHandshakeInterceptor;
+    private  final PrincipalHandshakeHandler principalHandshakeHandler;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
         config.enableSimpleBroker("/topic");
         config.setApplicationDestinationPrefixes("/app");
+        config.setUserDestinationPrefix("/user");
     }
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
-                .addInterceptors(ipHandshakeInterceptor)
+                .addInterceptors(ipHandshakeInterceptor, cusHandshakeInterceptor)
+                .setHandshakeHandler(principalHandshakeHandler)
                 .withSockJS();
     }
 

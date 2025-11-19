@@ -1,6 +1,5 @@
 package com.JRobusta.chat.socket_gateway.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,27 +12,17 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SocketMessageDTO {
-
-    private UUID messageId;
+public class AckOffsetDTO {
 
     private UUID conversationId;
 
     private UUID userId;
 
-    private Long serverSeq;
+    private Long ackedSeq;
 
-    private UUID threadRootId;
+    private String status;
 
-    private String text;
+    private String clientMsgId;
 
-    private String type = "default";
-
-    private Instant createdAt;
-
-    private Instant updatedAt;
-
-    private Boolean edited = false;
-    private Boolean deleted = false;
-    
+    private Instant ackedAt;
 }

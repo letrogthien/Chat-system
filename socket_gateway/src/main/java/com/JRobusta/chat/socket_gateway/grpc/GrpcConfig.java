@@ -1,6 +1,7 @@
 package com.JRobusta.chat.socket_gateway.grpc;
 
 import connection.v1.ConnectionManagerGrpc;
+import message.v1.MessageServiceGrpc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.grpc.client.GrpcChannelFactory;
@@ -21,6 +22,17 @@ public class GrpcConfig {
     @Bean
     ConnectionManagerGrpc.ConnectionManagerBlockingStub connectionManagerBlockingStub(GrpcChannelFactory grpcChannelFactory) {
         return ConnectionManagerGrpc.newBlockingStub(grpcChannelFactory.createChannel(Const.CHANNELS_GRPC_CONNECTION_MANAGEMENT.getValue()));
+    }
+
+
+    @Bean
+    MessageServiceGrpc.MessageServiceBlockingStub messageServiceBlockingStub(GrpcChannelFactory grpcChannelFactory) {
+        return MessageServiceGrpc.newBlockingStub(grpcChannelFactory.createChannel(Const.CHANNELS_GRPC_MESSAGE.getValue()));
+    }
+
+    @Bean
+    MessageServiceGrpc.MessageServiceStub messageServiceStub(GrpcChannelFactory grpcChannelFactory) {
+        return MessageServiceGrpc.newStub(grpcChannelFactory.createChannel(Const.CHANNELS_GRPC_MESSAGE.getValue()));
     }
 
 

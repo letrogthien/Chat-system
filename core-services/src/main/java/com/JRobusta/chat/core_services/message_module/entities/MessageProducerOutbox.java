@@ -16,8 +16,8 @@ import java.util.UUID;
 @Builder
 public class MessageProducerOutbox {
     @Id
-    @Column(name = "id", columnDefinition = "BINARY(16)")
-    private UUID id;
+    @Column(name = "id", length = 36, nullable = false)
+    private String id;
 
     @Column(name = "conversation_id", columnDefinition = "BINARY(16)", nullable = false)
     private UUID conversationId;

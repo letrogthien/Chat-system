@@ -1,9 +1,7 @@
 package com.JRobusta.chat.socket_gateway.socket;
 
 
-import auth.v1.Auth;
 import com.JRobusta.chat.socket_gateway.common.Const;
-import com.JRobusta.chat.socket_gateway.grpc.client.AuthGrpcClient;
 import com.JRobusta.chat.socket_gateway.grpc.client.ConnectionManagerClient;
 import com.JRobusta.chat.socket_gateway.redis.RedisService;
 import com.google.protobuf.Timestamp;
@@ -24,7 +22,6 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class StompAuthInterceptor implements ChannelInterceptor {
-    private final AuthGrpcClient authGrpcClient;
     private final RedisService redisService;
     private final ConnectionManagerClient connectionManagerClient;
 

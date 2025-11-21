@@ -5,7 +5,7 @@ USE chat_message_service;
 
 
 CREATE TABLE IF NOT EXISTS message_producer_outbox (
-    id BINARY(16) PRIMARY KEY,
+    id VARCHAR(36) PRIMARY KEY,
     conversation_id BINARY(16) NOT NULL,
     topic VARCHAR(255) NOT NULL,
     payload JSON NOT NULL,

@@ -20,7 +20,7 @@ public class MessageOutboxService {
     private final MessageProducerOutboxRepository outboxRepository;
 
     @Transactional
-    public void processOutboxEvent(MessageEvent messageEvent, UUID outboxId) {
+    public void processOutboxEvent(MessageEvent messageEvent, String outboxId) {
         MessageProducerOutbox outbox = outboxRepository.findById(outboxId)
                 .orElseThrow(() -> new IllegalStateException("Outbox entry not found: " + outboxId));
 

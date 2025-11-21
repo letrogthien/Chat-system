@@ -4,6 +4,7 @@ package com.JRobusta.chat.core_services.message_module.debezium;
 import com.JRobusta.chat.core_services.events.MessageEvent;
 import com.JRobusta.chat.core_services.message_module.services.MessageOutboxService;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.debezium.config.Configuration;
 import io.debezium.embedded.Connect;
 import io.debezium.engine.DebeziumEngine;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.source.SourceRecord;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 
@@ -28,24 +31,27 @@ import java.util.concurrent.Executors;
 @RequiredArgsConstructor
 public class DebeziumConfig {
 
-    @Value("${spring.datasource.url}")
-    private String datasourceUrl;
-
-    @Value("${spring.datasource.username}")
-    private String datasourceUsername;
-
-    @Value("${spring.datasource.password}")
-    private String datasourcePassword;
-
+    private final Configuration debeziumConfiguration;
     private DebeziumEngine<RecordChangeEvent<SourceRecord>> debeziumEngine;
     private final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
 
-    private final MessageOutboxService messageOutboxService;
+    private ObjectProvider<MessageOutboxService> messageOutboxService;
 
+
+
+
+    @Autowired
+    public void setMessageOutboxService(ObjectProvider<MessageOutboxService> messageOutboxService) {
+        this.messageOutboxService = messageOutboxService;
+    }
 
     @Bean
-    public Configuration debeziumConnectorConfig() {
+    public static Configuration debeziumConnectorConfig(
+            @Value("${spring.datasource.url}") String datasourceUrl,
+            @Value("${spring.datasource.username}") String datasourceUsername,
+            @Value("${spring.datasource.password}") String datasourcePassword) {
+
         String[] urlParts = datasourceUrl.split("/");
         String[] hostPort = urlParts[2].split(":");
         String hostname = hostPort[0];
@@ -56,7 +62,7 @@ public class DebeziumConfig {
                 .with("name", "message-outbox-connector")
                 .with("connector.class", "io.debezium.connector.mysql.MySqlConnector")
                 .with("offset.storage", "org.apache.kafka.connect.storage.FileOffsetBackingStore")
-                .with("offset.storage.file.filename", "/tmp/offsets.dat")
+                .with("offset.storage.file.filename", "F:/chat-sys/tmp/offsets.dat")
                 .with("offset.flush.interval.ms", "60000")
                 .with("database.hostname", hostname)
                 .with("database.port", port)
@@ -66,7 +72,8 @@ public class DebeziumConfig {
                 .with("topic.prefix", "dbserver1")
                 .with("database.include.list", database)
                 .with("table.include.list", database + ".message_producer_outbox")
-                .with("schema.history.internal", "io.debezium.relational.history.MemorySchemaHistory")
+                .with("schema.history.internal", "io.debezium.storage.file.history.FileSchemaHistory")
+                .with("schema.history.internal.file.filename", "F:/chat-sys/tmp/schema-history.dat")
                 .with("database.allowPublicKeyRetrieval", "true")
                 .with("include.schema.changes", "false")
                 .build();
@@ -75,37 +82,46 @@ public class DebeziumConfig {
     @PostConstruct
     public void start() {
         this.debeziumEngine = DebeziumEngine.create(ChangeEventFormat.of(Connect.class))
-                .using(debeziumConnectorConfig().asProperties())
+                .using(debeziumConfiguration.asProperties())
                 .notifying(this::handleChangeEvent)
                 .build();
 
         executor.execute(debeziumEngine);
     }
 
-    private void handleChangeEvent(RecordChangeEvent<SourceRecord> sourceRecordRecordChangeEvent) {
+    private void handleChangeEvent(RecordChangeEvent<SourceRecord> event) {
         try {
-            SourceRecord sourceRecord = sourceRecordRecordChangeEvent.record();
-            Struct sourceRecordValue = (Struct) sourceRecord.value();
-
-            if (sourceRecordValue != null) {
-                String operation = (String) sourceRecordValue.get("op");
-
-                if ("c".equals(operation) || "u".equals(operation)) {
-                    Struct after = (Struct) sourceRecordValue.get("after");
-                    if (after != null) {
-                        String payload = after.getString("payload");
-                        MessageEvent messageEvent = objectMapper.readValue(payload, MessageEvent.class);
-                        UUID uuid = UUID.fromString(after.getString("id"));
-                        messageOutboxService.processOutboxEvent(messageEvent, uuid);
-                    }
-                }
+            SourceRecord record = event.record();
+            Struct value = (Struct) record.value();
+            if (value == null) {
+                return;
             }
-        } catch (Exception e){
-            log.error("Error processing change event: ", e);
+
+            String op = (String) value.get("op");
+            if (!"c".equals(op) && !"u".equals(op)) {
+                return;
+            }
+
+            Struct after = (Struct) value.get("after");
+            if (after == null) {
+                return;
+            }
+
+            String payload = after.getString("payload");
+            MessageEvent messageEvent = objectMapper.readValue(payload, MessageEvent.class);
+            String uuid = after.getString("id");
+
+            MessageOutboxService service = messageOutboxService != null ? messageOutboxService.getIfAvailable() : null;
+            if (service != null) {
+                service.processOutboxEvent(messageEvent, uuid);
+            } else {
+                log.warn("MessageOutboxService not available when processing outbox event with id: {}", uuid);
+            }
+        } catch (Exception e) {
+
+            throw new RuntimeException("Error processing change event", e);
         }
     }
-
-
 
     @PreDestroy
     public void stop() throws IOException {

@@ -1,7 +1,5 @@
 package com.JRobusta.chat.socket_gateway.grpc.client;
 
-import com.JRobusta.chat.socket_gateway.mapper.MessageMapper;
-import com.JRobusta.chat.socket_gateway.socket.SocketSendMsgService;
 import io.grpc.stub.StreamObserver;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -25,27 +23,52 @@ public class MessageGrpcClient {
 
     @PostConstruct
     public void init() {
+        createNewStream();
+    }
+
+    private void createNewStream() {
         StreamObserver<MessageOuterClass.CreateMessageResponse> responseObserver =
                 new StreamObserver<MessageOuterClass.CreateMessageResponse>() {
-                    @Override
-                    public void onNext(MessageOuterClass.CreateMessageResponse createMessageResponse) {
 
+                    @Override
+                    public void onNext(MessageOuterClass.CreateMessageResponse response) {
+                        // nhận message từ server nếu cần
                     }
 
                     @Override
                     public void onError(Throwable throwable) {
-                        // Handle errors
+                        System.err.println("gRPC stream error: " + throwable.getMessage());
+                        reconnectWithBackoff();
                     }
 
                     @Override
                     public void onCompleted() {
-
+                        System.out.println("gRPC stream completed.");
+                        reconnectWithBackoff();
                     }
                 };
-        requestStream = this.createMessageRequestStreamObserver(responseObserver);
+
+        this.requestStream = this.createMessageRequestStreamObserver(responseObserver);
+        System.out.println("gRPC stream created.");
     }
 
-    public void send(MessageOuterClass.CreateMessageRequest request) {
-        requestStream.onNext(request);
+    private void reconnectWithBackoff() {
+        try {
+            Thread.sleep(1000);  // backoff 1s
+        } catch (InterruptedException ignored) {
+        }
+
+        System.out.println("Reconnecting gRPC stream...");
+        createNewStream();
+    }
+
+    public synchronized void send(MessageOuterClass.CreateMessageRequest request) {
+        try {
+            requestStream.onNext(request);
+        } catch (Exception e) {
+            System.err.println("Send failed, reconnecting: " + e.getMessage());
+            reconnectWithBackoff();
+            requestStream.onNext(request);
+        }
     }
 }

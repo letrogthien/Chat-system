@@ -4,7 +4,7 @@ spring:
       ddl-auto: update
     show-sql: true
   datasource:
-    url: jdbc:mysql://localhost:3306/auth_db
+    url: jdbc:mysql://localhost:3306/slack_clone
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver

@@ -56,7 +56,7 @@ public class AuthService {
 
     public String tokenTest() {
         try {
-            String accessToken = jwtTokenFactory.createToken("userid9999", TokenType.ACCESS_TOKEN);
+            String accessToken = jwtTokenFactory.createToken("11111111-1111-1111-1111-111111111111", TokenType.ACCESS_TOKEN);
             return accessToken;
         } catch (Exception e) {
             System.out.println("Error creating token: ");

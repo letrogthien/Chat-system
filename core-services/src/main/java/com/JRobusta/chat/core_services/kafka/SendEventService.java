@@ -1,4 +1,4 @@
-package com.JRobusta.chat.core_services.message_module.kafka;
+package com.JRobusta.chat.core_services.kafka;
 
 
 import com.JRobusta.chat.core_services.events.MessageEvent;
@@ -13,10 +13,15 @@ import java.util.concurrent.CompletableFuture;
 @Service
 @RequiredArgsConstructor
 public class SendEventService {
-    private final KafkaTemplate<String, MessageEvent> kafkaTemplate;
+    private final KafkaTemplate<String, MessageEvent> kafkaTemplateMessageEvent;
+    private final KafkaTemplate<String, String> kafkaTemplateString;
 
     public CompletableFuture<SendResult<String, MessageEvent>> sendEvent(final String topic, final MessageEvent event, final String key) {
-        return kafkaTemplate.send(topic, key, event);
+        return kafkaTemplateMessageEvent.send(topic, key, event);
+    }
+
+    public CompletableFuture<SendResult<String, String>> sendEventOutbox(final String topic, final String value, final String key) {
+        return kafkaTemplateString.send(topic, key, value);
     }
 
 }

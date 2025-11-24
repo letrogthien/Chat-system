@@ -1,4 +1,4 @@
-package com.JRobusta.chat.core_services.message_module.kafka;
+package com.JRobusta.chat.core_services.kafka;
 
 
 import org.springframework.context.annotation.Configuration;

@@ -1,10 +1,14 @@
 package com.JRobusta.chat.core_services.message_module.debezium;
 
 
-import com.JRobusta.chat.core_services.events.MessageEvent;
+import com.JRobusta.chat.core_services.kafka.KafkaTopic;
+import com.JRobusta.chat.core_services.message_module.common.Const;
+import com.JRobusta.chat.core_services.kafka.SendEventService;
+import com.JRobusta.chat.core_services.message_module.common.OutboxStatus;
 import com.JRobusta.chat.core_services.message_module.services.MessageOutboxService;
+import com.JRobusta.chat.core_services.redis.RedisService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.debezium.config.Configuration;
 import io.debezium.embedded.Connect;
 import io.debezium.engine.DebeziumEngine;
@@ -16,13 +20,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.source.SourceRecord;
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.event.EventListener;
 
 import java.io.IOException;
-import java.util.UUID;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -34,17 +37,10 @@ public class DebeziumConfig {
     private final Configuration debeziumConfiguration;
     private DebeziumEngine<RecordChangeEvent<SourceRecord>> debeziumEngine;
     private final Executor executor = Executors.newVirtualThreadPerTaskExecutor();
+    private final SendEventService sendEventService;
+    private final RedisService redisService;
     private final ObjectMapper objectMapper;
-
-    private ObjectProvider<MessageOutboxService> messageOutboxService;
-
-
-
-
-    @Autowired
-    public void setMessageOutboxService(ObjectProvider<MessageOutboxService> messageOutboxService) {
-        this.messageOutboxService = messageOutboxService;
-    }
+    private final MessageOutboxService messageOutboxService;
 
     @Bean
     public static Configuration debeziumConnectorConfig(
@@ -80,25 +76,27 @@ public class DebeziumConfig {
     }
 
     @PostConstruct
-    public void start() {
+    public void buildEngine() {
         this.debeziumEngine = DebeziumEngine.create(ChangeEventFormat.of(Connect.class))
                 .using(debeziumConfiguration.asProperties())
                 .notifying(this::handleChangeEvent)
                 .build();
+    }
 
+    @EventListener(ApplicationReadyEvent.class)
+    public void startEngine() {
         executor.execute(debeziumEngine);
     }
 
     private void handleChangeEvent(RecordChangeEvent<SourceRecord> event) {
         try {
-            SourceRecord record = event.record();
-            Struct value = (Struct) record.value();
+            Struct value = (Struct) event.record().value();
             if (value == null) {
                 return;
             }
 
             String op = (String) value.get("op");
-            if (!"c".equals(op) && !"u".equals(op)) {
+            if (!"c".equals(op)) {  // chỉ xử lý insert
                 return;
             }
 
@@ -106,20 +104,34 @@ public class DebeziumConfig {
             if (after == null) {
                 return;
             }
+            String status = after.getString("status"); // lấy status
+            if (!OutboxStatus.PENDING.toString().equalsIgnoreCase(status)) {  // chỉ xử lý PENDING
+                return;
+            }
 
             String payload = after.getString("payload");
-            MessageEvent messageEvent = objectMapper.readValue(payload, MessageEvent.class);
             String uuid = after.getString("id");
 
-            MessageOutboxService service = messageOutboxService != null ? messageOutboxService.getIfAvailable() : null;
-            if (service != null) {
-                service.processOutboxEvent(messageEvent, uuid);
-            } else {
-                log.warn("MessageOutboxService not available when processing outbox event with id: {}", uuid);
-            }
-        } catch (Exception e) {
 
-            throw new RuntimeException("Error processing change event", e);
+            String conversationId = objectMapper.readTree(payload).get("conversationId").asText();
+            sendEventService.sendEventOutbox(KafkaTopic.OUTBOX_EVENT.getTopicName() , uuid + "|" + payload, conversationId)
+                    .whenComplete(
+                            (result, ex) -> {
+                                if (ex != null) {
+                                    System.out.println("Failed to send outbox event to Kafka, falling back to Redis for outboxId: " + uuid);
+                                    redisService.pushToList(Const.OUTBOX_REDIS_FALLBACK.getValue(), uuid + "|" + payload);
+                                } else {
+                                    messageOutboxService.markAsProcessed(uuid, OutboxStatus.PROCESSED);
+                                }
+                            }
+                    );
+
+
+        } catch (Exception e) {
+            if (e instanceof JsonProcessingException) {
+                log.error("Failed to parse outbox event payload", e);
+            }
+            log.error("Failed to send outbox event to Redis fallback queue", e);
         }
     }
 

@@ -9,7 +9,7 @@
 		<version>3.5.7</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.JRobusta.chat-sys</groupId>
+	<groupId>com.JRobusta.chat</groupId>
 	<artifactId>core-services</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>core-services</name>

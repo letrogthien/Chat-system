@@ -34,6 +34,7 @@ public class CusHandshakeInterceptor implements HandshakeInterceptor  {
             return false;
         }
         Auth.VerifyResponse verified = authGrpcClient.verifyAccessToken(token);
+        System.out.println("valid? :" + verified.getValid());
         if (verified == null || !verified.getValid()) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return false;

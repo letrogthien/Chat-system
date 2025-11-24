@@ -4,7 +4,7 @@ import com.JRobusta.chat.core_services.events.MessageEvent;
 import com.JRobusta.chat.core_services.message_module.common.OutboxStatus;
 import com.JRobusta.chat.core_services.message_module.entities.Message;
 import com.JRobusta.chat.core_services.message_module.entities.MessageProducerOutbox;
-import com.JRobusta.chat.core_services.message_module.kafka.KafkaTopic;
+import com.JRobusta.chat.core_services.kafka.KafkaTopic;
 import com.JRobusta.chat.core_services.message_module.mapper.MessageMapper;
 import com.JRobusta.chat.core_services.message_module.repositories.ConversationSequenceRepository;
 import com.JRobusta.chat.core_services.message_module.repositories.MessageProducerOutboxRepository;

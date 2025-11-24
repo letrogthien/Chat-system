@@ -38,5 +38,11 @@ public class MessageProducerOutbox {
     @Column(name = "status", nullable = false)
     private OutboxStatus status = OutboxStatus.PENDING;
 
+    @PreUpdate
+    protected void onUpdate() {
+        if (this.status == OutboxStatus.PROCESSED) {
+            this.processedAt = Instant.now();
+        }
+    }
 
 }

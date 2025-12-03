@@ -4,8 +4,6 @@ import lombok.Getter;
 
 @Getter
 public enum MessageAckStatus {
-    SEND,
-    DELIVERED,
-    READ
+  SEND, DELIVERED, READ
 
 }

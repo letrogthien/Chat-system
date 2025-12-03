@@ -32,6 +32,7 @@ public class StompAuthInterceptor implements ChannelInterceptor {
 
     @Override
     public Message<?> preSend(Message<?> message, org.springframework.messaging.MessageChannel channel) {
+        System.out.println(gatewayNodeId);
         StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
         String sessionId = accessor.getSessionId();
         String userId = Objects.toString(

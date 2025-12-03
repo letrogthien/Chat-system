@@ -19,13 +19,13 @@ import java.util.UUID;
 @Getter
 @Setter
 public class ConversationSequence {
-    @Id
-    @Column(name = "conversation_id", columnDefinition = "BINARY(16)")
-    private UUID conversationId;
+  @Id
+  @Column(name = "conversation_id", columnDefinition = "BINARY(16)")
+  private UUID conversationId;
 
-    @Column(name = "last_seq")
-    private Long lastSeq = 0L;
+  @Column(name = "last_seq")
+  private Long lastSeq = 0L;
 
-    @Column(name = "updated_at", insertable = false, updatable = false)
-    private Instant updatedAt;
+  @Column(name = "updated_at", insertable = false, updatable = false)
+  private Instant updatedAt;
 }

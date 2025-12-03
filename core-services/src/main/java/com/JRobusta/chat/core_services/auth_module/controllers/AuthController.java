@@ -16,23 +16,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 
 
-
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final AuthService authService;
+  private final AuthService authService;
 
 
-    @PostMapping("/login")
-    public ApiResponse<LoginResponse> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        return authService.login(request, response);
-    }
+  @PostMapping("/login")
+  public ApiResponse<LoginResponse> login(@RequestBody LoginRequest request,
+      HttpServletResponse response) {
+    return authService.login(request, response);
+  }
 
-    @GetMapping("/jwt")
-    public String tokenTest() {
-        return authService.tokenTest();
-    }
-    
-    
+  @GetMapping("/jwt")
+  public String tokenTest() {
+    return authService.tokenTest();
+  }
+
+  @GetMapping("/jwt/1")
+  public String tokenTest1() {
+    return authService.tokenTest1();
+  }
 }

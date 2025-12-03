@@ -10,11 +10,10 @@ import org.springframework.context.annotation.Primary;
 
 @Configuration
 public class Config {
-    @Bean
-    @Primary
-    public ObjectMapper objectMapper() {
-        return new ObjectMapper()
-                .registerModule(new JavaTimeModule())
-                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    }
+  @Bean
+  @Primary
+  public ObjectMapper objectMapper() {
+    return new ObjectMapper().registerModule(new JavaTimeModule())
+        .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+  }
 }

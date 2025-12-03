@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class CoreServicesApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(CoreServicesApplication.class, args);
-	}
+  public static void main(String[] args) {
+    SpringApplication.run(CoreServicesApplication.class, args);
+  }
 
 }

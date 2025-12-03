@@ -15,34 +15,34 @@ import java.util.UUID;
 @Setter
 @Builder
 public class MessageProducerOutbox {
-    @Id
-    @Column(name = "id", length = 36, nullable = false)
-    private String id;
+  @Id
+  @Column(name = "id", length = 36, nullable = false)
+  private String id;
 
-    @Column(name = "conversation_id", columnDefinition = "BINARY(16)", nullable = false)
-    private UUID conversationId;
+  @Column(name = "conversation_id", columnDefinition = "BINARY(16)", nullable = false)
+  private UUID conversationId;
 
-    @Column(name = "topic", length = 255, nullable = false)
-    private String topic;
+  @Column(name = "topic", length = 255, nullable = false)
+  private String topic;
 
-    @Column(name = "payload", columnDefinition = "JSON", nullable = false)
-    private String payload;
+  @Column(name = "payload", columnDefinition = "JSON", nullable = false)
+  private String payload;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private Instant createdAt;
+  @Column(name = "created_at", insertable = false, updatable = false)
+  private Instant createdAt;
 
-    @Column(name = "processed_at")
-    private Instant processedAt;
+  @Column(name = "processed_at")
+  private Instant processedAt;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private OutboxStatus status = OutboxStatus.PENDING;
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
+  private OutboxStatus status = OutboxStatus.PENDING;
 
-    @PreUpdate
-    protected void onUpdate() {
-        if (this.status == OutboxStatus.PROCESSED) {
-            this.processedAt = Instant.now();
-        }
+  @PreUpdate
+  protected void onUpdate() {
+    if (this.status == OutboxStatus.PROCESSED) {
+      this.processedAt = Instant.now();
     }
+  }
 
 }

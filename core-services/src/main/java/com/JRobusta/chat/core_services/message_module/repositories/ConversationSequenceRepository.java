@@ -15,21 +15,21 @@ import org.springframework.transaction.annotation.Transactional;
 public interface ConversationSequenceRepository extends JpaRepository<ConversationSequence, UUID> {
 
 
-    @Query("""
-                    SELECT cs.lastSeq
-                    FROM ConversationSequence cs
-                    WHERE cs.conversationId = :conversationId
-            
-            """)
-    Long getSequenceNumber(@Param("conversationId") UUID conversationId);
+  @Query("""
+              SELECT cs.lastSeq
+              FROM ConversationSequence cs
+              WHERE cs.conversationId = :conversationId
 
-    @Modifying
-    @Transactional
-    @Query("""
-           UPDATE ConversationSequence cs
-           SET cs.lastSeq = :sequenceNumber
-           WHERE cs.conversationId = :conversationId
-           """)
-    void updateSequenceNumber(@Param("conversationId") UUID conversationId,
-                              @Param("sequenceNumber") Long sequenceNumber);
+      """)
+  Long getSequenceNumber(@Param("conversationId") UUID conversationId);
+
+  @Modifying
+  @Transactional
+  @Query("""
+      UPDATE ConversationSequence cs
+      SET cs.lastSeq = :sequenceNumber
+      WHERE cs.conversationId = :conversationId
+      """)
+  void updateSequenceNumber(@Param("conversationId") UUID conversationId,
+      @Param("sequenceNumber") Long sequenceNumber);
 }

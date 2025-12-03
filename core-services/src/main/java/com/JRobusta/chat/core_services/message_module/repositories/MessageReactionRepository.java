@@ -6,6 +6,7 @@ import org.springframework.stereotype.Repository;
 import com.JRobusta.chat.core_services.message_module.entities.MessageReaction;
 
 @Repository
-public interface MessageReactionRepository extends JpaRepository<MessageReaction, MessageReaction.MessageReactionId> {
+public interface MessageReactionRepository
+    extends JpaRepository<MessageReaction, MessageReaction.MessageReactionId> {
 
 }

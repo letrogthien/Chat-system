@@ -45,7 +45,6 @@ message RegisterConnectionResponse {
 message UnregisterConnectionRequest {
   string connection_id = 1;
   string userId = 2;
-
 }
 
 message UnregisterConnectionResponse {
@@ -80,6 +79,16 @@ message GetOnlineUsersResponse {
   repeated string user_ids = 1;
 }
 
+message GetConnectionsByGatewayNodeRequest {
+  string gateway_node_id = 1;
+}
+message GetConnectionsByGatewayNodeResponse {
+  repeated Connection connections = 1;
+}
+message GetAllConnectionsResponse {
+  repeated Connection connections = 1;
+}
+message GetAllConnectionsRequest {}
 // -------------------------------
 // SERVICE DEFINITION
 // -------------------------------
@@ -89,4 +98,6 @@ service ConnectionManager {
   rpc UpdateLastPing (UpdateLastPingRequest) returns (UpdateLastPingResponse);
   rpc GetConnectionsByUser (GetConnectionsByUserRequest) returns (GetConnectionsByUserResponse);
   rpc GetOnlineUsers (GetOnlineUsersRequest) returns (GetOnlineUsersResponse);
+  rpc GetConnectionsByGatewayNode (GetConnectionsByGatewayNodeRequest) returns (GetConnectionsByGatewayNodeResponse);
+  rpc GetAllConnections (GetAllConnectionsRequest) returns (GetConnectionsByGatewayNodeResponse);
 }

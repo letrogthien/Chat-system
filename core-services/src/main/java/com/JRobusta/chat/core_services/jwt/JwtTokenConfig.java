@@ -13,26 +13,24 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Configuration
-@ConfigurationProperties(
-        prefix = "security.secret"
-)
+@ConfigurationProperties(prefix = "security.secret")
 @Data
 public class JwtTokenConfig {
-    private Map<String, TokenConfig> tokens = new HashMap<>();
+  private Map<String, TokenConfig> tokens = new HashMap<>();
 
-    @Getter
-    @Setter
-    public static class TokenConfig {
-        private String secret;
-        private long expiration;
-    }
+  @Getter
+  @Setter
+  public static class TokenConfig {
+    private String secret;
+    private long expiration;
+  }
 
-    public TokenConfig getTokenConfig(TokenType tokenType) {
-        TokenConfig config = this.tokens.get(tokenType.name().toLowerCase());
-        if (config == null) {
-            throw new IllegalArgumentException("No configuration found for token type: " + tokenType);
-        } else {
-            return config;
-        }
+  public TokenConfig getTokenConfig(TokenType tokenType) {
+    TokenConfig config = this.tokens.get(tokenType.name().toLowerCase());
+    if (config == null) {
+      throw new IllegalArgumentException("No configuration found for token type: " + tokenType);
+    } else {
+      return config;
     }
+  }
 }

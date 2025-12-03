@@ -13,11 +13,11 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class CusJwtDecoder implements JwtDecoder {
-    private final RSAPublicKey rsaPublicKey;
+  private final RSAPublicKey rsaPublicKey;
 
-    @Override
-    public Jwt decode(String token) throws JwtException {
-        return NimbusJwtDecoder.withPublicKey(rsaPublicKey).build().decode(token);
-    }
+  @Override
+  public Jwt decode(String token) throws JwtException {
+    return NimbusJwtDecoder.withPublicKey(rsaPublicKey).build().decode(token);
+  }
 
 }

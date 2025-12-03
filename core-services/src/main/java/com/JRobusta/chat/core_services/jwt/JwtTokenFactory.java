@@ -28,70 +28,67 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtTokenFactory {
-    private final JwtTokenConfig config;
-    private final RSAPrivateKey privateKey;
-    private final RSAPublicKey publicKey;
+  private final JwtTokenConfig config;
+  private final RSAPrivateKey privateKey;
+  private final RSAPublicKey publicKey;
 
 
 
-    public String createToken(String userId, TokenType tokenType)
-            throws JOSEException {
+  public String createToken(String userId, TokenType tokenType) throws JOSEException {
 
-        switch (tokenType) {
-            case ACCESS_TOKEN, REFRESH_TOKEN:
-                JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.RS256)
-                        .type(com.nimbusds.jose.JOSEObjectType.JWT)
-                        .keyID("auth-key-001").build();
+    switch (tokenType) {
+      case ACCESS_TOKEN, REFRESH_TOKEN:
+        JWSHeader header = new JWSHeader.Builder(JWSAlgorithm.RS256)
+            .type(com.nimbusds.jose.JOSEObjectType.JWT).keyID("auth-key-001").build();
 
-                JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
-                        .claim("id", userId)
-                        .jwtID(UUID.randomUUID().toString())
-                        .issueTime(java.util.Date.from(Instant.now()))
-                        .expirationTime(java.util.Date
-                                .from(Instant.now().plusMillis(this.config.getTokenConfig(tokenType).getExpiration())))
-                        .build();
-                SignedJWT signedJWT = new SignedJWT(header, claimsSet);
-                signedJWT.sign(new RSASSASigner(privateKey));
-                return signedJWT.serialize();
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder().claim("id", userId)
+            .jwtID(UUID.randomUUID().toString()).issueTime(java.util.Date.from(Instant.now()))
+            .expirationTime(java.util.Date.from(
+                Instant.now().plusMillis(this.config.getTokenConfig(tokenType).getExpiration())))
+            .build();
+        SignedJWT signedJWT = new SignedJWT(header, claimsSet);
+        signedJWT.sign(new RSASSASigner(privateKey));
+        return signedJWT.serialize();
 
-            default:
-                return null;
-        }
+      default:
+        return null;
     }
+  }
 
 
-    public boolean validateToken(String token, TokenType tokenType) throws ParseException, JOSEException {
-        SignedJWT signedJWT = SignedJWT.parse(token);
-        switch (tokenType) {
-            case ACCESS_TOKEN:
-                JWSVerifier verifier = new RSASSAVerifier(publicKey);
-                return signedJWT.verify(verifier);
-            case REFRESH_TOKEN:
-                JWSVerifier verifierRefresh = new RSASSAVerifier(publicKey);
-                return signedJWT.verify(   verifierRefresh);
-            default:
-                return false;
-        }
+  public boolean validateToken(String token, TokenType tokenType)
+      throws ParseException, JOSEException {
+    SignedJWT signedJWT = SignedJWT.parse(token);
+    switch (tokenType) {
+      case ACCESS_TOKEN:
+        JWSVerifier verifier = new RSASSAVerifier(publicKey);
+        return signedJWT.verify(verifier);
+      case REFRESH_TOKEN:
+        JWSVerifier verifierRefresh = new RSASSAVerifier(publicKey);
+        return signedJWT.verify(verifierRefresh);
+      default:
+        return false;
     }
+  }
 
 
 
-    public Map<String, Object> extractClaims(String token) {
-        try {
-            JWT jwt = JWTParser.parse(token);
-            return jwt.getJWTClaimsSet().getClaims();
-        } catch (Exception var3) {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
-        }
+  public Map<String, Object> extractClaims(String token) {
+    try {
+      JWT jwt = JWTParser.parse(token);
+      return jwt.getJWTClaimsSet().getClaims();
+    } catch (Exception var3) {
+      throw new CustomException(ErrorCode.INVALID_TOKEN);
     }
+  }
 
-    public String extractClaim(String token, String claim) {
-        Map<String, Object> claims = this.extractClaims(token);
-        if (claims.containsKey(claim)) {
-            return claims.get(claim).toString();
-        } else {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
-        }
+  public String extractClaim(String token, String claim) {
+    Map<String, Object> claims = this.extractClaims(token);
+    if (claims.containsKey(claim)) {
+      return claims.get(claim).toString();
+    } else {
+      throw new CustomException(ErrorCode.INVALID_TOKEN);
     }
+  }
 
 }

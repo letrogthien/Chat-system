@@ -13,14 +13,14 @@ import lombok.ToString;
 @Setter
 @ToString
 public class User extends UserBase {
-    @Column(name = "display_name", nullable = false)
-    private String displayName;
+  @Column(name = "display_name", nullable = false)
+  private String displayName;
 
-    @Column(name = "profile_picture_url")
-    private String profilePictureUrl;
+  @Column(name = "profile_picture_url")
+  private String profilePictureUrl;
 
-    @Column(name = "is_active", nullable = false)
-    private boolean isActive;
+  @Column(name = "is_active", nullable = false)
+  private boolean isActive;
 
-    
+
 }

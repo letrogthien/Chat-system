@@ -22,33 +22,33 @@ import lombok.ToString;
 @ToString
 public class UserBase {
 
-    @Id
-    protected String id;
+  @Id
+  protected String id;
 
-    @Column(nullable = false, unique = true)
-    protected String email;
+  @Column(nullable = false, unique = true)
+  protected String email;
 
-    @Column(nullable = false, unique = true)
-    protected String userName;
-    
-    @Column(nullable = false)
-    protected String passwordHash;
+  @Column(nullable = false, unique = true)
+  protected String userName;
 
-    @Column(nullable = false)
-    protected Instant createdAt;
+  @Column(nullable = false)
+  protected String passwordHash;
 
-    @Column(nullable = false)
-    protected Instant updatedAt;
+  @Column(nullable = false)
+  protected Instant createdAt;
+
+  @Column(nullable = false)
+  protected Instant updatedAt;
 
 
-    @PrePersist
-    protected void onCreate() {
-        createdAt = Instant.now();
-        updatedAt = Instant.now();
-    }
+  @PrePersist
+  protected void onCreate() {
+    createdAt = Instant.now();
+    updatedAt = Instant.now();
+  }
 
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = Instant.now();
-    }
+  @PreUpdate
+  protected void onUpdate() {
+    updatedAt = Instant.now();
+  }
 }

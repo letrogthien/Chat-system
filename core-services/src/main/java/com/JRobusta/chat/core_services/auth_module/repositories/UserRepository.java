@@ -11,10 +11,10 @@ import com.JRobusta.chat.core_services.auth_module.entities.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
 
-    Optional<User> findByEmail(String email);
+  Optional<User> findByEmail(String email);
 
-    Optional<User> findByUserName(String username);
+  Optional<User> findByUserName(String username);
 
-    
-    
+
+
 }

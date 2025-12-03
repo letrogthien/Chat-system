@@ -21,23 +21,23 @@ import java.util.UUID;
 @Getter
 @Setter
 public class MessageAttachment {
-    @Id
-    @Column(name = "attachment_id", columnDefinition = "BINARY(16)")
-    private UUID attachmentId;
+  @Id
+  @Column(name = "attachment_id", columnDefinition = "BINARY(16)")
+  private UUID attachmentId;
 
-    @Column(name = "message_id", columnDefinition = "BINARY(16)", nullable = false)
-    private UUID messageId;
+  @Column(name = "message_id", columnDefinition = "BINARY(16)", nullable = false)
+  private UUID messageId;
 
-    @Column(name = "type", length = 30, nullable = false)
-    private String type;
+  @Column(name = "type", length = 30, nullable = false)
+  private String type;
 
-    @Column(name = "url", columnDefinition = "TEXT")
-    private String url;
+  @Column(name = "url", columnDefinition = "TEXT")
+  private String url;
 
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "metadata", columnDefinition = "JSON")
-    private String metadata;
+  @JdbcTypeCode(SqlTypes.JSON)
+  @Column(name = "metadata", columnDefinition = "JSON")
+  private String metadata;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
-    private Instant createdAt;
+  @Column(name = "created_at", insertable = false, updatable = false)
+  private Instant createdAt;
 }

@@ -12,7 +12,8 @@ public enum Const {
     CONNECTION_VERIFIED_REDIS("CONNECTION_VERIFIED:"),
     CLIENT_IP_ATTRIBUTE("CLIENT_IP"),
     PRIVATE_MESSAGE_SUFFIX("/queue/messages/private"),
-    PRIVATE_NOTIFICATION_SUFFIX("/queue/notifications/private"),;
+    PRIVATE_NOTIFICATION_SUFFIX("/queue/notifications/private"),
+    GROUP_EPHEMERAL_MESSAGE_ALL("ephemeral-consumer-group"),;
 
     private final String value;
 

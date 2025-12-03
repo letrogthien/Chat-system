@@ -10,9 +10,10 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 @Repository
-public interface MessageProducerOutboxRepository extends JpaRepository<MessageProducerOutbox, String> {
-    @Modifying
-    @Transactional
-    @Query("UPDATE MessageProducerOutbox o SET o.status = :status WHERE o.id = :id")
-    int updateStatusById(@Param("id") String id, @Param("status") OutboxStatus status);
+public interface MessageProducerOutboxRepository
+    extends JpaRepository<MessageProducerOutbox, String> {
+  @Modifying
+  @Transactional
+  @Query("UPDATE MessageProducerOutbox o SET o.status = :status WHERE o.id = :id")
+  int updateStatusById(@Param("id") String id, @Param("status") OutboxStatus status);
 }

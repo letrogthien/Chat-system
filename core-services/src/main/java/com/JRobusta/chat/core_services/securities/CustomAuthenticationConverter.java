@@ -20,24 +20,24 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CustomAuthenticationConverter implements Converter<Jwt, AbstractAuthenticationToken> {
 
-    public AbstractAuthenticationToken convert(@NonNull Jwt jwt) {
-        List<GrantedAuthority> roles = this.extractAuthorities(jwt);
-        return new JwtAuthenticationToken(jwt, roles);
+  public AbstractAuthenticationToken convert(@NonNull Jwt jwt) {
+    List<GrantedAuthority> roles = this.extractAuthorities(jwt);
+    return new JwtAuthenticationToken(jwt, roles);
 
+  }
+
+  private List<GrantedAuthority> extractAuthorities(Jwt jwt) {
+    return this.extractAuthoritiesFromToken(jwt);
+  }
+
+  private List<GrantedAuthority> extractAuthoritiesFromToken(Jwt jwt) {
+    List<GrantedAuthority> roles = new ArrayList<>();
+    if (jwt.getClaim("roles") != null) {
+      List<String> roleList = jwt.getClaim("roles");
+      roles = roleList.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
     }
 
-    private List<GrantedAuthority> extractAuthorities(Jwt jwt) {
-        return this.extractAuthoritiesFromToken(jwt);
-    }
-
-    private List<GrantedAuthority> extractAuthoritiesFromToken(Jwt jwt) {
-        List<GrantedAuthority> roles = new ArrayList<>();
-        if (jwt.getClaim("roles") != null) {
-            List<String> roleList = jwt.getClaim("roles");
-            roles = roleList.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-        }
-
-        return roles;
-    }
+    return roles;
+  }
 
 }

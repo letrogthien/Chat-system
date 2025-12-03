@@ -12,18 +12,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class OutboxEventConsumer {
-    private final MessageOutboxService messageOutboxService;
+  private final MessageOutboxService messageOutboxService;
 
-    @KafkaListener(topics = "outbox.event.raw", groupId = "core-services-group", concurrency = "3")
-    @Transactional
-    public void consumeOutboxEvent(String message) {
-        messageOutboxService.trySendOrForward(message);
-    }
-
-
-
-
-
+  @KafkaListener(topics = "outbox.event.raw", groupId = "core-services-group", concurrency = "3")
+  @Transactional
+  public void consumeOutboxEvent(String message) {
+    messageOutboxService.trySendOrForward(message);
+  }
 
 
 

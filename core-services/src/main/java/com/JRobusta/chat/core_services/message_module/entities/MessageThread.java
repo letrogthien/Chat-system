@@ -19,19 +19,19 @@ import java.util.UUID;
 @Getter
 @Setter
 public class MessageThread {
-    @Id
-    @Column(name = "thread_root_id", columnDefinition = "BINARY(16)")
-    private UUID threadRootId;
+  @Id
+  @Column(name = "thread_root_id", columnDefinition = "BINARY(16)")
+  private UUID threadRootId;
 
-    @Column(name = "conversation_id", columnDefinition = "BINARY(16)", nullable = false)
-    private UUID conversationId;
+  @Column(name = "conversation_id", columnDefinition = "BINARY(16)", nullable = false)
+  private UUID conversationId;
 
-    @Column(name = "reply_count")
-    private Integer replyCount = 0;
+  @Column(name = "reply_count")
+  private Integer replyCount = 0;
 
-    @Column(name = "last_reply_at", insertable = false, updatable = false)
-    private Instant lastReplyAt;
+  @Column(name = "last_reply_at", insertable = false, updatable = false)
+  private Instant lastReplyAt;
 
-    @Column(name = "last_replied_by", columnDefinition = "BINARY(16)")
-    private UUID lastRepliedBy;
+  @Column(name = "last_replied_by", columnDefinition = "BINARY(16)")
+  private UUID lastRepliedBy;
 }

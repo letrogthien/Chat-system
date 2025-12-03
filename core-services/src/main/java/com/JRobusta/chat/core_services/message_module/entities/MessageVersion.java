@@ -16,20 +16,20 @@ import java.util.UUID;
 @Getter
 @Setter
 public class MessageVersion {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "version_id")
-    private Long versionId;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @Column(name = "version_id")
+  private Long versionId;
 
-    @Column(name = "message_id", columnDefinition = "BINARY(16)", nullable = false)
-    private UUID messageId;
+  @Column(name = "message_id", columnDefinition = "BINARY(16)", nullable = false)
+  private UUID messageId;
 
-    @Column(name = "old_text", columnDefinition = "TEXT", nullable = false)
-    private String oldText;
+  @Column(name = "old_text", columnDefinition = "TEXT", nullable = false)
+  private String oldText;
 
-    @Column(name = "edited_at", insertable = false, updatable = false)
-    private Instant editedAt;
+  @Column(name = "edited_at", insertable = false, updatable = false)
+  private Instant editedAt;
 
-    @Column(name = "edited_by", columnDefinition = "BINARY(16)", nullable = false)
-    private UUID editedBy;
+  @Column(name = "edited_by", columnDefinition = "BINARY(16)", nullable = false)
+  private UUID editedBy;
 }

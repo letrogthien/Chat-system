@@ -16,11 +16,11 @@ import lombok.Builder.Default;
 @Builder
 public class ApiResponse<T> {
 
-    @Default
-    private HttpStatus status = HttpStatus.OK;
-    private T data;
-    private String message;
-    @Default
-    private Instant timestamp = Instant.now();
+  @Default
+  private HttpStatus status = HttpStatus.OK;
+  private T data;
+  private String message;
+  @Default
+  private Instant timestamp = Instant.now();
 }
 

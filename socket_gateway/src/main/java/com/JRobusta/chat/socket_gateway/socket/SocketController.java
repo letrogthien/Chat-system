@@ -27,6 +27,17 @@ public class SocketController {
                         .build()
         );
     }
+    @MessageMapping("/guest/chat")
+    public void receiveGuestMessage(SocketMessageDTO message, SimpMessageHeaderAccessor headerAccessor) {
+        message.setType("GUEST");
+        message.setConversationId(message.getUserId());
+        messageGrpcClient.send(
+                MessageOuterClass.CreateMessageRequest.newBuilder()
+                        .setMessage(toProto(message))
+                        .setClientMsgId(message.getMessageId().toString())
+                        .build()
+        );
+    }
 
 //    @PostConstruct
 //    public void startWorker() {

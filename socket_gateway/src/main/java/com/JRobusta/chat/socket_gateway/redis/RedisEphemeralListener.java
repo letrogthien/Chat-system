@@ -22,6 +22,7 @@ public class RedisEphemeralListener implements StreamListener<String, ObjectReco
         try {
             String json = message.getValue();
             EphemeralRedisMessage ephemeralMessage = objectMapper.readValue(json, EphemeralRedisMessage.class);
+            System.out.println("Received ephemeral message for user: " + ephemeralMessage.getRecipientId());
             socketSendMsgService.sendMessageToUser(ephemeralMessage);
         } catch (Exception e) {
             e.printStackTrace();

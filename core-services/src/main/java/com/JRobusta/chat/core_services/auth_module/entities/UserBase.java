@@ -2,17 +2,9 @@ package com.JRobusta.chat.core_services.auth_module.entities;
 
 import java.time.Instant;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
-import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -20,9 +12,13 @@ import lombok.ToString;
 @Setter
 @Getter
 @ToString
+@SuperBuilder
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserBase {
 
   @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
   protected String id;
 
   @Column(nullable = false, unique = true)

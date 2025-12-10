@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum KafkaTopic {
   MESSAGE_ALL("message.all"), OUTBOX_EVENT("outbox.event.raw"),
-  CONNECTION_ADD("connection.add"), CONNECTION_REMOVE("connection.remove");
+  CONNECTION_ADD("connection.add"), CONNECTION_REMOVE("connection.remove"),
+  CHATBOT_MESSAGE("chatbot.message");
 
   private final String topicName;
 

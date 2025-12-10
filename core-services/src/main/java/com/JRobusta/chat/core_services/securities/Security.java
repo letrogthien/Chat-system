@@ -70,7 +70,6 @@ public class Security {
   @GlobalServerInterceptor
   AuthenticationProcessInterceptor jwtSecurityFilterChain(GrpcSecurity grpc) throws Exception {
     return grpc.authorizeRequests(requests -> requests
-
         .allRequests().permitAll()).build();
   }
 }

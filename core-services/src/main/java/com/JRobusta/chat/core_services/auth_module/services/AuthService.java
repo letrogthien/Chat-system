@@ -1,5 +1,7 @@
 package com.JRobusta.chat.core_services.auth_module.services;
 
+import com.JRobusta.chat.core_services.auth_module.requests.RegisterRequest;
+import com.JRobusta.chat.core_services.auth_module.response.RegisterResponse;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,7 @@ import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +29,7 @@ public class AuthService {
   private final PasswordEncoder passwordEncoder;
   private final JwtTokenFactory jwtTokenFactory;
 
+  @Transactional
   public ApiResponse<LoginResponse> login(LoginRequest request, HttpServletResponse response) {
     User user = userRepository.findByUserName(request.getUsername())
         .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -48,30 +52,47 @@ public class AuthService {
     } catch (JOSEException e) {
       throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
     }
-
   }
 
-  public String tokenTest() {
-    try {
-      String accessToken = jwtTokenFactory.createToken("11111111-1111-1111-1111-111111111111",
-          TokenType.ACCESS_TOKEN);
-      return accessToken;
-    } catch (Exception e) {
-      System.out.println("Error creating token: ");
-    }
-    return null;
+
+  @Transactional
+  public ApiResponse<RegisterResponse> register(RegisterRequest request) {
+      if (userRepository.existsByUserName(request.getUsername())) {
+        throw new CustomException(ErrorCode.USERNAME_ALREADY_EXISTS);
+      }
+
+      User newUser = User.builder().userName(request.getUsername()).email(request.getEmail())
+              .displayName(request.getDisplayName())
+              .passwordHash(passwordEncoder.encode(request.getPassword())).build();
+
+      userRepository.save(newUser);
+
+      return ApiResponse.<RegisterResponse>builder().data(
+          RegisterResponse.builder().message("register success").build())
+          .build();
   }
 
-  public String tokenTest1() {
-    try {
-      String accessToken = jwtTokenFactory.createToken("22222222-2222-2222-2222-222222222222",
-              TokenType.ACCESS_TOKEN);
-      return accessToken;
-    } catch (Exception e) {
-      System.out.println("Error creating token: ");
-    }
-    return null;
-  }
+//  public String tokenTest() {
+//    try {
+//      String accessToken = jwtTokenFactory.createToken("11111111-1111-1111-1111-111111111111",
+//          TokenType.ACCESS_TOKEN);
+//      return accessToken;
+//    } catch (Exception e) {
+//      System.out.println("Error creating token: ");
+//    }
+//    return null;
+//  }
+//
+//  public String tokenTest1() {
+//    try {
+//      String accessToken = jwtTokenFactory.createToken("22222222-2222-2222-2222-222222222222",
+//          TokenType.ACCESS_TOKEN);
+//      return accessToken;
+//    } catch (Exception e) {
+//      System.out.println("Error creating token: ");
+//    }
+//    return null;
+//  }
 
   private void setCookie(HttpServletResponse response, String name, String value,
       int maxAgeInSeconds, boolean httpOnly, boolean secure, String path) {
@@ -83,4 +104,13 @@ public class AuthService {
     response.addCookie(cookie);
   }
 
+  public ApiResponse<String> createGuestSession(String uuid) {
+      try {
+          String accessToken = jwtTokenFactory.createToken(uuid, TokenType.ACCESS_TOKEN);
+          return ApiResponse.<String>builder()
+                  .data(accessToken).build();
+      } catch (JOSEException e) {
+          throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+      }
+  }
 }

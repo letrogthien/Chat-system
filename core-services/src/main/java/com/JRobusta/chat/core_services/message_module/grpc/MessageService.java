@@ -25,10 +25,18 @@ public class MessageService extends MessageServiceGrpc.MessageServiceImplBase {
       @Override
       public void onNext(MessageOuterClass.CreateMessageRequest request) {
         try {
-          MessageOuterClass.Message savedMessage =
-              messageServiceHelper.handleMessage(request.getMessage());
-          responseObserver.onNext(MessageOuterClass.CreateMessageResponse.newBuilder()
-              .setMessage(savedMessage).setSuccess(true).build());
+          if (request.getMessage().getType().equals("GUEST")){
+            System.out.println("Processing guest message");
+            MessageOuterClass.Message savedMessage =
+                    messageServiceHelper.handleGuestMessage(request.getMessage());
+            responseObserver.onNext(MessageOuterClass.CreateMessageResponse.newBuilder()
+                    .setMessage(savedMessage).setSuccess(true).build());
+          } else {
+            MessageOuterClass.Message savedMessage =
+                    messageServiceHelper.handleMessage(request.getMessage());
+            responseObserver.onNext(MessageOuterClass.CreateMessageResponse.newBuilder()
+                    .setMessage(savedMessage).setSuccess(true).build());
+          }
         } catch (Exception e) {
           responseObserver.onError(e);
         }

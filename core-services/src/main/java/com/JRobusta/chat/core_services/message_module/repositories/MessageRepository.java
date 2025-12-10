@@ -1,5 +1,6 @@
 package com.JRobusta.chat.core_services.message_module.repositories;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,4 +11,5 @@ import com.JRobusta.chat.core_services.message_module.entities.Message;
 @Repository
 public interface MessageRepository extends JpaRepository<Message, UUID> {
 
+    List<Message> findAllByConversationId(UUID conversationId);
 }

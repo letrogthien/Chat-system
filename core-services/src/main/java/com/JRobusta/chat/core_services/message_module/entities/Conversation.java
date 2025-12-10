@@ -1,10 +1,7 @@
 package com.JRobusta.chat.core_services.message_module.entities;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.Instant;
 import java.util.UUID;
@@ -15,6 +12,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
+@Builder
 public class Conversation {
   @Id
   @Column(name = "conversation_id", columnDefinition = "BINARY(16)")

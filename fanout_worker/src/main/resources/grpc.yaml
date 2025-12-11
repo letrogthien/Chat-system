@@ -4,3 +4,8 @@ spring:
       port: 9090
       security:
         enabled: false
+    client:
+      channels:
+        connection-management-service:
+          address: ${GRPC_CLIENT_CORE_SERVICES_ADDRESS:static://localhost:9090}
+          negotiation-type: plaintext
